@@ -1,6 +1,6 @@
 # PDF Helper
 
-This is a Python command-line tool for manipulating PDF files, allowing you to remove or keep specific ranges from a PDF document.
+This is a Python command-line tool for manipulating PDF files.
 
 ## Installation
 
