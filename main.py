@@ -90,6 +90,11 @@ if __name__ == "__main__":
         type=lambda x: tuple(map(int, x.split("-"))),
         help="Page ranges in the format 'start-end' (e.g., 1-10 20-30)",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force overwrite of existing output file without confirmation.",
+    )
 
     args = parser.parse_args()
 
@@ -105,7 +110,7 @@ if __name__ == "__main__":
         output_pdf = os.path.join(base_dir, f"{base_name}_modified{extension}")
 
     # Get confirmation from user before overwriting existing file
-    if os.path.exists(output_pdf):
+    if (not args.force) and os.path.exists(output_pdf):
         overwrite = input(f"File {output_pdf} already exists. Overwrite? (y/N): ")
         if overwrite.lower() != "y":
             print("Exiting.")
