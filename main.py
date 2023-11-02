@@ -1,4 +1,5 @@
 import argparse
+import os
 import PyPDF2
 
 
@@ -57,6 +58,7 @@ def keep_pages(input_pdf, output_pdf, page_ranges_to_keep):
         with open(output_pdf, "wb") as output_file:
             pdf_writer.write(output_file)
 
+
 def merge_pdfs(input_pdfs, output_pdf):
     pdf_merger = PyPDF2.PdfFileMerger()
 
@@ -69,9 +71,6 @@ def merge_pdfs(input_pdfs, output_pdf):
 
 
 if __name__ == "__main__":
-    input_pdf = "/mnt/c/Users/moham/Downloads/routing.pdf"
-    output_pdf = "/mnt/c/Users/moham/Downloads/short_routing.pdf"
-
     parser = argparse.ArgumentParser(
         description="Modify a PDF by removing or keeping specific page ranges."
     )
@@ -80,15 +79,41 @@ if __name__ == "__main__":
         choices=["remove", "keep"],
         help="Specify whether to remove or keep specific page ranges.",
     )
+    parser.add_argument("input_pdf", help="Input PDF file.")
+    parser.add_argument(
+        "--output",
+        help="Name of output PDF file. If not provided, a default suffix will be used.",
+    )
     parser.add_argument(
         "page_ranges",
         nargs="+",
         type=lambda x: tuple(map(int, x.split("-"))),
         help="Page ranges in the format 'start-end' (e.g., 1-10 20-30)",
     )
+
     args = parser.parse_args()
+
+    input_pdf = args.input_pdf
+    base_dir = os.path.dirname(input_pdf)
+    base_name, extension = os.path.splitext(os.path.basename(input_pdf))
+    if args.output:
+        output_pdf = os.path.join(base_dir, args.output)
+        if not output_pdf.endswith(extension):
+            output_pdf += extension
+    else:
+        print("No output file provided. Using default suffix 'modified'.")
+        output_pdf = os.path.join(base_dir, f"{base_name}_modified{extension}")
+
+    # Get confirmation from user before overwriting existing file
+    if os.path.exists(output_pdf):
+        overwrite = input(f"File {output_pdf} already exists. Overwrite? (y/N): ")
+        if overwrite.lower() != "y":
+            print("Exiting.")
+            exit()
 
     if args.action == "remove":
         remove_pages(input_pdf, output_pdf, args.page_ranges)
     elif args.action == "keep":
         keep_pages(input_pdf, output_pdf, args.page_ranges)
+
+    # TODO: Add support for merging multiple PDFs
