@@ -57,6 +57,16 @@ def keep_pages(input_pdf, output_pdf, page_ranges_to_keep):
         with open(output_pdf, "wb") as output_file:
             pdf_writer.write(output_file)
 
+def merge_pdfs(input_pdfs, output_pdf):
+    pdf_merger = PyPDF2.PdfFileMerger()
+
+    for pdf in input_pdfs:
+        with open(pdf, "rb") as pdf_file:
+            pdf_merger.append(pdf_file)
+
+    with open(output_pdf, "wb") as output_file:
+        pdf_merger.write(output_file)
+
 
 if __name__ == "__main__":
     input_pdf = "/mnt/c/Users/moham/Downloads/routing.pdf"
