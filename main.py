@@ -1,7 +1,12 @@
+import argparse
 import PyPDF2
 
 
 def remove_pages(input_pdf, output_pdf, page_ranges_to_remove):
+    print(
+        f"Removing pages {page_ranges_to_remove} from {input_pdf} and saving to {output_pdf}"
+    )
+
     pdf_writer = PyPDF2.PdfWriter()
 
     with open(input_pdf, "rb") as pdf_file:
@@ -28,6 +33,17 @@ def remove_pages(input_pdf, output_pdf, page_ranges_to_remove):
 if __name__ == "__main__":
     input_pdf = "/mnt/c/Users/moham/Downloads/routing.pdf"
     output_pdf = "/mnt/c/Users/moham/Downloads/short_routing.pdf"
-    page_ranges_to_remove = [(1, 13), (97, 238)]
+
+    parser = argparse.ArgumentParser(
+        description="Remove specific page ranges from a PDF."
+    )
+    parser.add_argument(
+        "page_ranges_to_remove",
+        nargs="+",
+        type=lambda x: tuple(map(int, x.split("-"))),
+        help="Page ranges to remove in the format 'start-end' (e.g., 1-10 20-30)",
+    )
+    args = parser.parse_args()
+    page_ranges_to_remove = args.page_ranges_to_remove
 
     remove_pages(input_pdf, output_pdf, page_ranges_to_remove)
